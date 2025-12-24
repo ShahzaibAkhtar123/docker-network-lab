@@ -1,0 +1,111 @@
+# docker-network-lab/docker-compose.yml
+version: '3.8'
+
+networks:
+  ext_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "172.20.0.0/24"
+          gateway: "172.20.0.254"
+  
+  int_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "192.168.100.0/24"
+          gateway: "192.168.100.254"
+  
+  dmz_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "10.10.10.0/24"
+          gateway: "10.10.10.254"
+
+services:
+  # Router Container (Multi-homed)
+  router:
+    image: ubuntu:22.04
+    container_name: router
+    command: ["sleep", "infinity"]
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    sysctls:
+      - net.ipv4.ip_forward=1
+    networks:
+      ext_net:
+        ipv4_address: "172.20.0.1"
+      int_net:
+        ipv4_address: "192.168.100.2"
+      dmz_net:
+        ipv4_address: "10.10.10.2"
+    volumes:
+      - ./config/router/iptables-rules.v4:/etc/iptables/rules.v4
+      - ./config/router/sysctl.conf:/etc/sysctl.conf
+    restart: unless-stopped
+
+  # External Network Services
+  web_server:
+    image: nginx:alpine
+    container_name: web_server
+    networks:
+      ext_net:
+        ipv4_address: "172.20.0.10"
+    restart: unless-stopped
+
+  dns_server:
+    image: alpine:latest
+    container_name: dns_server
+    command: ["sleep", "infinity"]
+    networks:
+      ext_net:
+        ipv4_address: "172.20.0.53"
+    restart: unless-stopped
+
+  # Internal Network Clients
+  client1:
+    image: alpine:latest
+    container_name: client1
+    command: ["sleep", "infinity"]
+    cap_add:
+      - NET_ADMIN
+    networks:
+      int_net:
+        ipv4_address: "192.168.100.10"
+    restart: unless-stopped
+
+  client2:
+    image: alpine:latest
+    container_name: client2
+    command: ["sleep", "infinity"]
+    cap_add:
+      - NET_ADMIN
+    networks:
+      int_net:
+        ipv4_address: "192.168.100.11"
+    restart: unless-stopped
+
+  # DMZ Network Servers
+  app_server:
+    image: alpine:latest
+    container_name: app_server
+    command: ["sleep", "infinity"]
+    cap_add:
+      - NET_ADMIN
+    networks:
+      dmz_net:
+        ipv4_address: "10.10.10.5"
+    restart: unless-stopped
+
+  file_server:
+    image: alpine:latest
+    container_name: file_server
+    command: ["sleep", "infinity"]
+    cap_add:
+      - NET_ADMIN
+    networks:
+      dmz_net:
+        ipv4_address: "10.10.10.6"
+    restart: unless-stopped
