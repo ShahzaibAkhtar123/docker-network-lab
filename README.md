@@ -11,7 +11,6 @@ A Docker-based network security lab that simulates enterprise network architectu
 - Linux/macOS/WSL2 environment
 
 ### INSTALLATION COMMANDS
-\`\`\`bash
 # Clone and enter directory
 git clone https://github.com/yourusername/docker-network-lab.git
 cd docker-network-lab
@@ -27,12 +26,9 @@ chmod +x *.sh
 
 # Or run advanced tests
 ./test-lab2.sh
-\`\`\`
 
 ## BASIC COMMANDS
-
 ### START/STOP LAB
-\`\`\`bash
 # Start all containers
 docker-compose up -d
 
@@ -44,10 +40,9 @@ docker-compose restart router
 
 # View container logs
 docker-compose logs -f router
-\`\`\`
 
 ### TESTING COMMANDS
-\`\`\`bash
+
 # Basic connectivity test
 ./test-lab.sh
 
@@ -59,7 +54,7 @@ docker-compose logs -f router
 
 # Reset everything (WARNING: deletes all)
 ./reset-lab.sh
-\`\`\`
+
 
 ### TROUBLESHOOTING COMMANDS
 \`\`\`bash
@@ -75,12 +70,11 @@ docker-compose exec app_server ping 10.10.10.2
 # Check container status
 docker-compose ps
 docker-compose logs router
-\`\`\`
 
 ## NETWORK ARCHITECTURE
 
 ### IP ADDRESSES
-\`\`\`
+
 EXTERNAL NETWORK (172.20.0.0/24)
 ├── Router:      172.20.0.1
 ├── Web Server:  172.20.0.10
@@ -95,10 +89,8 @@ INTERNAL NETWORK (192.168.100.0/24)
 ├── Router:      192.168.100.2
 ├── Client 1:    192.168.100.10
 └── Client 2:    192.168.100.11
-\`\`\`
 
 ### SECURITY RULES
-\`\`\`
 ALLOWED TRAFFIC:
 ├── Internal → DMZ → External
 ├── External → DMZ (ports 80, 443, 22 only)
@@ -111,7 +103,6 @@ BLOCKED TRAFFIC:
 NAT CONFIGURATION:
 ├── Internal → External: MASQUERADE
 └── DMZ → External: MASQUERADE
-\`\`\`
 
 ## FILE DESCRIPTIONS
 
@@ -142,11 +133,11 @@ Kernel parameters. Enables IP forwarding on router, configures network settings 
 ## LEARNING EXERCISES
 
 ### EXERCISE 1: BASIC CONNECTIVITY
-\`\`\`bash
+
 ./test-lab.sh
 docker-compose exec router iptables -L -n -v
 docker-compose exec client1 ip route
-\`\`\`
+
 
 ### EXERCISE 2: MODIFY FIREWALL
 1. Edit config/router/iptables-rules.v4
@@ -161,24 +152,19 @@ docker-compose exec client1 ip route
 4. Adjust firewall as needed
 
 ### EXERCISE 4: TRAFFIC MONITORING
-\`\`\`bash
 docker-compose exec router tcpdump -i any -n
 docker-compose exec router conntrack -L
-\`\`\`
+
 
 ## TROUBLESHOOTING
 
 ### COMMON ISSUES & SOLUTIONS
 
 1. CONTAINERS NOT STARTING:
-\`\`\`bash
 docker-compose logs router
 docker system prune -f
 ./reset-lab.sh && ./setup-lab.sh
-\`\`\`
-
 2. CONNECTIVITY PROBLEMS:
-\`\`\`bash
 # Check forwarding
 docker-compose exec router cat /proc/sys/net/ipv4/ip_forward
 
@@ -187,13 +173,12 @@ docker-compose exec router iptables -L FORWARD -n -v
 
 # Check routes
 docker-compose exec client1 ip route
-\`\`\`
 
 3. PERMISSION ERRORS:
-\`\`\`bash
+
 chmod +x *.sh
 sudo usermod -aG docker $USER
-\`\`\`
+
 
 ## LEARNING OUTCOMES
 
@@ -282,7 +267,7 @@ If helpful, please:
 
 **Happy Learning!** 🚀
 
-*"The only way to learn networking is to do networking."* - Network Engineers' Mantra
+*"The only way to learn networking is to do networking."* - Network Engineers'
 
 **Version:** 1.0  
 **Last Updated:** December 2025  
